@@ -19,7 +19,7 @@ import { TRACKS } from '../constants'
 const BackgroundBubbles = () => {
   return (
     <div className="background-bubbles-wrap" style={{ position: 'fixed', inset: 0, pointerEvents: 'none', overflow: 'hidden', zIndex: 0 }}>
-      {[...Array(25)].map((_, i) => (
+      {[...Array(5)].map((_, i) => (
         <motion.div
           key={i}
           className="bubble"
@@ -28,13 +28,14 @@ const BackgroundBubbles = () => {
             width: `${Math.random() * 50 + 20}px`,
             height: `${Math.random() * 50 + 20}px`,
             background: 'radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%)',
+            willChange: 'transform, opacity'
           }}
-          initial={{ y: '110vh', opacity: 0 }}
-          animate={{ y: '-10vh', opacity: [0, 0.4, 0] }}
+          initial={{ y: '100vh', opacity: 0 }}
+          animate={{ y: '-20vh', opacity: [0, 0.2, 0] }}
           transition={{
-            duration: Math.random() * 6 + 6,
+            duration: Math.random() * 10 + 10,
             repeat: Infinity,
-            delay: Math.random() * 10,
+            delay: Math.random() * 5,
             ease: "linear"
           }}
         />
@@ -47,7 +48,7 @@ export default function LandingPage() {
   const [isPlaying, setIsPlaying] = useState(false)
   const [activeModal, setActiveModal] = useState(null)
   const audioRef = useRef(null)
-  
+
   const snoozeTrack = TRACKS.find(t => t.title === 'Snooze') || TRACKS[0]
 
   // Fungsi toggle play manual untuk tombol
@@ -68,20 +69,16 @@ export default function LandingPage() {
   }
 
   useEffect(() => {
-    // Mencoba autoplay jujur (tanpa di-mute). 
-    // Browser biasanya memblokir ini saat refresh pertama.
+    // Coba auto-play langsung saat refresh
     if (audioRef.current) {
       audioRef.current.volume = 1.0;
       audioRef.current.play()
         .then(() => {
-          // Berhasil autoplay!
           setIsPlaying(true);
         })
-        .catch(() => {
-          setIsPlaying(false);
-        });
+        .catch(() => {});
     }
-  }, [])
+  }, []);
 
 
   const NAV_ITEMS = [
@@ -131,27 +128,17 @@ export default function LandingPage() {
             className="core-art-full"
             style={{ animationPlayState: isPlaying ? 'running' : 'paused' }}
           />
-          <div className="core-overlay">
+          <div className={`core-overlay ${!isPlaying ? 'is-visible' : ''}`}>
             <motion.div 
-              className="play-pause-btn" 
-              whileHover={{ scale: 1.1 }} 
-              whileTap={{ scale: 0.9 }}
-              style={{
-                background: isPlaying ? 'transparent' : 'white',
-                width: '80px',
-                height: '80px',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: isPlaying ? 'none' : '0 10px 40px rgba(0,0,0,0.5)',
-                cursor: 'pointer'
-              }}
+              className={`play-pause-btn ${isPlaying ? 'is-playing' : ''}`}
+              whileHover={{ scale: 1.05 }} 
+              whileTap={{ scale: 0.95 }}
+              onClick={togglePlay}
             >
               {isPlaying ? (
-                <Pause size={42} color="white" style={{ filter: 'drop-shadow(0 0 10px rgba(255,255,255,0.8))' }} />
+                <Pause className="pp-icon" />
               ) : (
-                <Play size={42} fill="black" color="black" style={{ marginLeft: '5px' }} />
+                <Play className="pp-icon play" />
               )}
             </motion.div>
           </div>
@@ -186,16 +173,18 @@ export default function LandingPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
             onClick={() => setActiveModal(null)}
-            style={{ zIndex: 100 }}
+            style={{ zIndex: 100, willChange: 'opacity' }}
           >
             <motion.div 
               className="modal-content"
-              initial={{ scale: 0.9, y: 30 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.9, y: 30 }}
-              transition={{ type: 'spring', damping: 30, stiffness: 400 }}
+              initial={{ y: 50, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 50, opacity: 0 }}
+              transition={{ type: 'tween', ease: 'easeOut', duration: 0.35 }}
               onClick={(e) => e.stopPropagation()}
+              style={{ willChange: 'transform, opacity' }}
             >
               <button className="close-modal" onClick={(e) => { e.stopPropagation(); setActiveModal(null); }}>
                 <X size={20} />
