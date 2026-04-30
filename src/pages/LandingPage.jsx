@@ -163,18 +163,8 @@ export default function LandingPage() {
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.5 }}
         >
-          <AnimatePresence>
-            {activeModal && (
-              <motion.div 
-                layoutId="nav-pill"
-                className="nav-pill"
-                style={{ 
-                  width: '100px',
-                  left: activeModal === 'home' ? '0.6rem' : activeModal === 'about' ? 'calc(0.6rem + 100px)' : 'calc(0.6rem + 200px)' 
-                }}
-              />
-            )}
-          </AnimatePresence>
+          {/* Nav Pill removed for a cleaner look */}
+
 
           {NAV_ITEMS.map((item) => (
             <div 
