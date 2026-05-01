@@ -47,20 +47,9 @@ const BackgroundBubbles = () => {
 export default function LandingPage() {
   const [isPlaying, setIsPlaying] = useState(false)
   const [activeModal, setActiveModal] = useState(null)
-  const [showSplash, setShowSplash] = useState(true)
   const audioRef = useRef(null)
 
   const snoozeTrack = TRACKS.find(t => t.title === 'Snooze') || TRACKS[0]
-
-  const startExperience = () => {
-    setShowSplash(false)
-    if (audioRef.current) {
-      audioRef.current.volume = 1.0
-      audioRef.current.play()
-        .then(() => setIsPlaying(true))
-        .catch((err) => console.log("Playback failed:", err))
-    }
-  }
 
   // Fungsi toggle play manual untuk tombol
   const togglePlay = (e) => {
@@ -80,35 +69,19 @@ export default function LandingPage() {
   }
 
   useEffect(() => {
-    // Try auto-play immediately (might be blocked)
-    if (audioRef.current) {
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    // Only attempt autoplay if not on mobile
+    if (!isMobile && audioRef.current) {
       audioRef.current.volume = 1.0;
       audioRef.current.play()
         .then(() => {
           setIsPlaying(true);
-          setShowSplash(false); // If autoplay works, hide splash
         })
-        .catch(() => {
-          console.log("Autoplay blocked, waiting for interaction");
+        .catch((err) => {
+          console.log("Desktop autoplay blocked by browser policy:", err);
         });
     }
-
-    // Global listener for first interaction as fallback
-    const handleFirstInteraction = () => {
-      if (showSplash) {
-        startExperience();
-      }
-      window.removeEventListener('click', handleFirstInteraction);
-      window.removeEventListener('touchstart', handleFirstInteraction);
-    };
-
-    window.addEventListener('click', handleFirstInteraction);
-    window.addEventListener('touchstart', handleFirstInteraction);
-
-    return () => {
-      window.removeEventListener('click', handleFirstInteraction);
-      window.removeEventListener('touchstart', handleFirstInteraction);
-    };
   }, []);
 
 
@@ -126,38 +99,6 @@ export default function LandingPage() {
       <div className="starfield" />
       
       <BackgroundBubbles />
-
-      <AnimatePresence>
-        {showSplash && (
-          <motion.div 
-            className="zen-splash"
-            initial={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <motion.div 
-              className="splash-content"
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 1, delay: 0.2 }}
-            >
-              <div className="splash-logo">
-                <Music size={48} color="var(--core-glow)" />
-              </div>
-              <h1>ALFAL</h1>
-              <p>Experience the music.</p>
-              <motion.button 
-                className="btn-start"
-                whileHover={{ scale: 1.05, letterSpacing: '0.2em' }}
-                whileTap={{ scale: 0.95 }}
-                onClick={startExperience}
-              >
-                ENTER EXPERIENCE
-              </motion.button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       <audio 
         ref={audioRef} 
