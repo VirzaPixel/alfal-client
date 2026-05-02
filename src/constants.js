@@ -7,8 +7,21 @@ import {
 // For now, I'll assume they are relative to src/
 import szaCover from './assets/sza.jpeg'
 import snoozeAudio from './assets/snooze.mp3'
+import kicauVideo from './assets/kicau_mania.mp4'
+import kicauAudio from './assets/DJ KICAU MANIA X MELODY HABIBI BANGSAY _ DJ GASPOL DANGAK DI GASPOL DANGAK DANGAK VIRAL TIKTOK 2026 - (320 Kbps).mp3'
 
 export const TRACKS = [
+  { 
+    id: 1, 
+    title: 'DJ KICAU MANIA', 
+    artist: 'ALFAL x KICAU MANIA', 
+    duration: '5:42', 
+    cover: kicauVideo, 
+    audio: kicauAudio, // Use dedicated mp3 audio
+    liked: true, 
+    genre: 'Remix',
+    isVideo: true 
+  },
   { id: 2, title: 'Snooze', artist: 'SZA', duration: '3:23', cover: szaCover, audio: snoozeAudio, liked: true, genre: 'R&B' },
 ]
 

@@ -44,12 +44,97 @@ const BackgroundBubbles = () => {
   )
 }
 
+const ChromaKeyVideo = ({ src, isPlaying }) => {
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    if (!video || !canvas) return;
+
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    let animationId;
+
+    const processFrame = () => {
+      if (!video.paused && !video.ended) {
+        // Set canvas size once to match video
+        if (video.videoWidth > 0 && (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight)) {
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+        }
+
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = frame.data;
+
+        for (let i = 0; i < data.length; i += 4) {
+          const r = data[i];
+          const g = data[i + 1];
+          const b = data[i + 2];
+
+          // More robust green detection
+          // If green is the dominant color and above a certain threshold
+          if (g > 70 && g > r * 1.1 && g > b * 1.1) {
+            data[i + 3] = 0; // Transparent
+          }
+        }
+        ctx.putImageData(frame, 0, 0);
+      }
+      animationId = requestAnimationFrame(processFrame);
+    };
+
+    animationId = requestAnimationFrame(processFrame);
+    return () => cancelAnimationFrame(animationId);
+  }, []);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      if (isPlaying) {
+        videoRef.current.play().catch(e => console.log("Video play error:", e));
+      } else {
+        videoRef.current.pause();
+      }
+    }
+  }, [isPlaying]);
+
+  return (
+    <div style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden', borderRadius: '50%' }}>
+      <video
+        ref={videoRef}
+        src={src}
+        loop
+        muted
+        playsInline
+        crossOrigin="anonymous"
+        style={{ 
+          position: 'absolute',
+          width: '1px',
+          height: '1px',
+          opacity: 0,
+          pointerEvents: 'none'
+        }}
+      />
+      <canvas
+        ref={canvasRef}
+        className="core-art-full"
+        style={{ 
+          width: '100%', 
+          height: '100%', 
+          objectFit: 'cover',
+          display: 'block'
+        }}
+      />
+    </div>
+  );
+};
+
 export default function LandingPage() {
   const [isPlaying, setIsPlaying] = useState(false)
   const [activeModal, setActiveModal] = useState(null)
   const audioRef = useRef(null)
 
-  const snoozeTrack = TRACKS.find(t => t.title === 'Snooze') || TRACKS[0]
+  const activeTrack = TRACKS.find(t => t.title === 'Kicau Maniaaaaaa') || TRACKS[0]
 
   // Fungsi toggle play manual untuk tombol
   const togglePlay = (e) => {
@@ -102,50 +187,69 @@ export default function LandingPage() {
 
       <audio 
         ref={audioRef} 
-        src={snoozeTrack.audio} 
+        src={activeTrack.audio} 
         loop
         preload="auto"
       />
 
       <main className="experience-wrap" style={{ position: 'relative', zIndex: 10 }}>
         
-        <motion.div 
-          className="track-info-wrap"
-          initial={{ y: -20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-        >
-          <h2>{snoozeTrack.title}</h2>
-          <p>{snoozeTrack.artist}</p>
-        </motion.div>
+
 
         <motion.div 
           className="alfal-core-v2"
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 1 }}
+          transition={{ duration: 0.8 }}
           onClick={togglePlay}
+          style={{ transformStyle: 'preserve-3d' }}
         >
-          <div className="digital-rings" />
-          <img 
-            src={snoozeTrack.cover} 
-            alt="SZA Snooze"
-            className="core-art-full"
-            style={{ animationPlayState: isPlaying ? 'running' : 'paused' }}
-          />
-          <div className={`core-overlay ${!isPlaying ? 'is-visible' : ''}`}>
-            <motion.div 
-              className={`play-pause-btn ${isPlaying ? 'is-playing' : ''}`}
-              whileHover={{ scale: 1.05 }} 
-              whileTap={{ scale: 0.95 }}
-              onClick={togglePlay}
-            >
-              {isPlaying ? (
-                <Pause className="pp-icon" />
-              ) : (
-                <Play className="pp-icon play" />
-              )}
-            </motion.div>
+          {/* Porthole Storm Cover (Hatch) */}
+          <div className={`porthole-cover ${isPlaying ? 'is-open' : ''}`} />
+
+          {/* Ship Porthole Bolts */}
+          <div className="porthole-bolts">
+            {[...Array(8)].map((_, i) => (
+              <div key={i} className="bolt" />
+            ))}
           </div>
+
+          <div className="digital-rings" />
+          
+          {activeTrack.isVideo ? (
+            <ChromaKeyVideo src={activeTrack.cover} isPlaying={isPlaying} />
+          ) : (
+            <img 
+              src={activeTrack.cover} 
+              alt={activeTrack.title}
+              className="core-art-full"
+              style={{ animationPlayState: isPlaying ? 'running' : 'paused' }}
+            />
+          )}
+
+          {/* 3D Floating Track Info */}
+          <motion.div 
+            className="track-info-wrap"
+            initial={{ z: 0, opacity: 0, y: 0 }} /* Starts hidden behind the door, in the center */
+            animate={isPlaying ? { z: 50, opacity: 1, y: -240 } : { z: 0, opacity: 0, y: 0 }}
+            transition={{ 
+              duration: 1.2, 
+              delay: isPlaying ? 0.3 : 0, /* Delay so the door opens first */
+              type: "spring",
+              stiffness: 80,
+              damping: 15
+            }} 
+            style={{ 
+              position: 'absolute', 
+              zIndex: 30, 
+              pointerEvents: 'none',
+              textAlign: 'center',
+              textShadow: '0 5px 15px rgba(0,0,0,0.8)'
+            }}
+          >
+            <h2>{activeTrack.title}</h2>
+            <p>{activeTrack.artist}</p>
+          </motion.div>
         </motion.div>
 
         <motion.nav 

@@ -52,20 +52,157 @@ body {
 .track-info-wrap h2 { font-size: 2rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 0.4rem; }
 .track-info-wrap p { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--core-glow); }
 
-/* ========== FULL-COVER DIGITAL DISC ========== */
+/* ========== PREMIUM SUBMARINE PORTHOLE FRAME ========== */
 .alfal-core-v2 {
   width: 360px;
   height: 360px;
-  background: #000;
+  background: radial-gradient(circle at center, #051014 0%, #020508 100%); /* Deep sea darkness */
   border-radius: 50%;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 80px rgba(99, 102, 241, 0.3);
   cursor: pointer;
-  overflow: hidden;
-  border: 1px solid var(--glass-border); 
+  overflow: visible;
+  
+  /* Heavy Titanium Frame */
+  border: 20px solid #2a2c30;
+  box-shadow: 
+    0 25px 60px rgba(0,0,0,1), /* Massive drop shadow */
+    0 10px 20px rgba(0,0,0,0.6),
+    inset 0 15px 25px rgba(0,0,0,0.9), /* Deep inner shadow */
+    inset 0 -10px 15px rgba(255,255,255,0.06), /* Inner rim highlight */
+    inset 0 0 40px rgba(10, 40, 50, 0.6), /* Thick glass edge refraction */
+    0 0 80px rgba(99, 102, 241, 0.1); /* Subtle aura */
+    
+  transform-style: preserve-3d;
+  perspective: 1200px;
+  transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Thick Glass Reflection & Tint */
+.alfal-core-v2::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: 
+    linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 40%, transparent 60%, rgba(255,255,255,0.05) 100%),
+    radial-gradient(circle at top left, rgba(0, 200, 255, 0.05), transparent 70%);
+  pointer-events: none;
+  z-index: 5;
+  transform: translateZ(15px);
+  box-shadow: inset 0 0 20px rgba(255,255,255,0.02);
+}
+
+/* Outer Beveled Rim Highlight */
+.alfal-core-v2::before {
+  content: '';
+  position: absolute;
+  inset: -24px;
+  border-radius: 50%;
+  border: 4px solid #1a1c1f;
+  background: linear-gradient(145deg, #4b4f56 0%, #1a1c1f 50%, #0a0b0d 100%);
+  z-index: -1;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.8);
+}
+
+/* Porthole Bolts (Rivets) */
+.porthole-bolts {
+  position: absolute;
+  inset: -18px;
+  width: calc(100% + 36px);
+  height: calc(100% + 36px);
+  pointer-events: none;
+  z-index: 2;
+  transform: translateZ(10px);
+}
+
+.bolt {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  background: radial-gradient(circle at 35% 35%, #888c94 0%, #3a3c42 40%, #1a1c1f 100%); /* Spherical dome */
+  border-radius: 50%;
+  box-shadow: 
+    3px 4px 6px rgba(0,0,0,0.9), /* Cast shadow */
+    inset -2px -2px 4px rgba(0,0,0,0.7),
+    inset 1px 1px 2px rgba(255,255,255,0.3); /* Specular highlight */
+  left: 50%;
+  top: 50%;
+  transform-origin: center center;
+}
+
+.bolt:nth-child(1) { transform: translate(-50%, -50%) rotate(0deg) translateY(-182px); }
+.bolt:nth-child(2) { transform: translate(-50%, -50%) rotate(45deg) translateY(-182px); }
+.bolt:nth-child(3) { transform: translate(-50%, -50%) rotate(90deg) translateY(-182px); }
+.bolt:nth-child(4) { transform: translate(-50%, -50%) rotate(135deg) translateY(-182px); }
+.bolt:nth-child(5) { transform: translate(-50%, -50%) rotate(180deg) translateY(-182px); }
+.bolt:nth-child(6) { transform: translate(-50%, -50%) rotate(225deg) translateY(-182px); }
+.bolt:nth-child(7) { transform: translate(-50%, -50%) rotate(270deg) translateY(-182px); }
+.bolt:nth-child(8) { transform: translate(-50%, -50%) rotate(315deg) translateY(-182px); }
+
+/* Heavy Storm Cover (Hatch) */
+.porthole-cover {
+  position: absolute;
+  inset: -2px; /* Fits perfectly inside the inner lip */
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #4a4e55 0%, #2a2c30 50%, #151619 100%); /* Industrial steel */
+  border: 6px solid #1a1c1f; /* Thicker, darker edge to blend seamlessly */
+  box-shadow: 
+    inset 3px 3px 6px rgba(255,255,255,0.15),
+    inset -6px -6px 20px rgba(0,0,0,0.9),
+    10px 20px 40px rgba(0,0,0,1), /* Deep swing shadow */
+    0 5px 15px rgba(0,0,0,0.8);
+  transform-origin: left center; 
+  transform: translateZ(35px); 
+  /* Removed the bounce/wobble curve. Uses a solid, heavy ease-out instead */
+  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 50; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backface-visibility: visible;
+  pointer-events: none; 
+}
+
+/* Hatch Locking Wheel (Industrial Valve) */
+.porthole-cover::after {
+  content: '';
+  position: absolute;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  border: 14px solid #222;
+  background: transparent;
+  box-shadow: 
+    inset 2px 2px 6px rgba(255,255,255,0.15),
+    inset -3px -3px 8px rgba(0,0,0,0.9),
+    4px 4px 10px rgba(0,0,0,0.8),
+    -1px -1px 2px rgba(255,255,255,0.05);
+  background-image: 
+    linear-gradient(0deg, transparent 40%, #222 40%, #222 60%, transparent 60%),
+    linear-gradient(90deg, transparent 40%, #222 40%, #222 60%, transparent 60%),
+    linear-gradient(45deg, transparent 45%, #1a1a1a 45%, #1a1a1a 55%, transparent 55%),
+    linear-gradient(135deg, transparent 45%, #1a1a1a 45%, #1a1a1a 55%, transparent 55%);
+}
+
+/* Center nut of the wheel */
+.porthole-cover::before {
+  content: '';
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #666 0%, #111 100%);
+  box-shadow: 
+    3px 3px 6px rgba(0,0,0,0.9),
+    inset 1px 1px 2px rgba(255,255,255,0.2);
+  z-index: 2;
+}
+
+.porthole-cover.is-open {
+  transform: rotateY(-125deg) translateZ(35px);
 }
 
 .core-art-full {
@@ -74,9 +211,9 @@ body {
   object-fit: cover;
   border-radius: 50%;
   pointer-events: none;
-  animation: spin 20s linear infinite;   
   will-change: transform;
 }
+
 
 @keyframes spin {
   from { transform: rotate(0deg); }      
@@ -107,6 +244,7 @@ body {
   transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); 
   z-index: 10; 
   pointer-events: none; /* Let clicks pass to the disc */
+  border-radius: 50%;
 }
 
 /* Always show if paused or if hovered on desktop */
@@ -153,7 +291,7 @@ body {
 
 /* ========== INTERACTIVE NAV DOCK ========== */
 .nav-dock {
-  margin-top: 2rem;
+  margin-top: 4.5rem; /* Increased distance from the porthole window */
   margin-bottom: calc(1rem + env(safe-area-inset-bottom));
   display: flex;
   align-items: center;
@@ -297,7 +435,7 @@ body {
   .track-info-wrap { margin-bottom: 0.5rem; }
   .track-info-wrap h2 { font-size: 1.3rem; }
   .nav-dock { 
-    margin-top: 1rem; 
+    margin-top: 2.5rem; 
     margin-bottom: calc(1rem + env(safe-area-inset-bottom));
     width: fit-content; /* Ultra compact */
     padding: 0.3rem 1rem;
