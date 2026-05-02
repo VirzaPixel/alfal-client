@@ -210,7 +210,7 @@ body {
   align-items: flex-start; /* Start from top to prevent clipping */
   justify-content: center;
   overflow-y: auto; /* Enable scrolling on the overlay itself */
-  padding: 2rem 0; /* Space at top and bottom */
+  padding: 2rem 0;
   -webkit-overflow-scrolling: touch;
 }
 
